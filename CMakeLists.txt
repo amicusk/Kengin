@@ -18,11 +18,11 @@ find_package(imgui CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 
 # 将源代码添加到此项目的可执行文件
-file(GLOB_RECURSE HEADER_FILES "${PROJECT_SOURCE_DIR}/include/*.h" "${PROJECT_SOURCE_DIR}/include/*.hpp")
-file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HEADER_FILES "include/*.h" "include/*.hpp")
+file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES})
-add_executable(Kengin main.cpp)
+add_executable(Kengin main.cpp ${HEADER_FILES} ${SOURCE_FILES})
 
 # 链接到库文件
 target_link_libraries(Kengin PRIVATE imgui::imgui)

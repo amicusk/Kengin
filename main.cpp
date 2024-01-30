@@ -1,7 +1,12 @@
 #include <iostream>
-#include "eigen3/Eigen/Core"
+#include <memory>
+#include "VulkanInstance.h"
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+int main()
+{
+    using namespace std::literals::string_view_literals;
+
+    auto instance = std::make_shared<VulkanContext::VulkanInstance>();
+    instance->CreateInstance("Kengin"sv);
+    instance->DestroyInstance();
 }
