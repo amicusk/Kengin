@@ -6,17 +6,69 @@
 #define KENGIN_VULKANAPPLICATION_H
 
 #include "VulkanInstance.h"
+#include "VulkanDevice.h"
+
+#include <memory>
+#include <mutex>
 
 namespace VulkanContext
 {
-    class VulkanApplication
+    using namespace std::literals::string_view_literals;
+
+    class VulkanApplication // Singleton
     {
-    public:
-        VkInstance instance;
+        //========================================================================
+        // 单例类基础实现
+        //========================================================================
 
     public:
-        VulkanApplication();
+        VulkanApplication(const VulkanApplication&) = delete;
+        VulkanApplication(VulkanApplication&&) = delete;
+        VulkanApplication& operator=(const VulkanApplication&) = delete;
+        VulkanApplication& operator=(VulkanApplication&&) = delete;
+
         ~VulkanApplication();
+
+        static VulkanApplication* GetInstance()
+        {
+            std::call_once(onlyOnce, [](){ instance.reset(new VulkanApplication()); });
+            return instance.get();
+        }
+
+    private:
+        static std::unique_ptr<VulkanApplication> instance;
+        static std::once_flag onlyOnce;
+
+    private:
+        VulkanApplication();
+
+        //========================================================================
+        // Program Life Cycle
+        //========================================================================
+
+    public:
+        void Init();
+        void Prepare();
+        void Update();
+        void Render();
+        void Release();
+
+        //========================================================================
+        // Vulkan Context 相关
+        //========================================================================
+
+    public:
+        std::unique_ptr<VulkanInstance> vulkanInstance;
+        std::unique_ptr<VulkanDevice> vulkanDevice;
+
+    private:
+        // Instance
+        void CreateVulkanInstance() const { vulkanInstance->CreateInstance("Kengin"sv); }
+        void CollectInstanceExtensionsAndLayers() const;
+
+        // Device
+        VkPhysicalDevice PickPhysicalDevice() const;
+        void CollectDeviceExtensionsAndFeatures() const;
     };
 } // VulkanContext
 

@@ -7,9 +7,9 @@
 
 namespace VulkanContext
 {
-    VkResult VulkanInstance::CreateInstance(std::string_view appName)
+    void VulkanInstance::CreateInstance(std::string_view appName)
     {
-        CollectExtensionsAndLayers();
+        CheckExtensionsIfSupported();
 
         VkApplicationInfo appInfo {};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -37,31 +37,18 @@ namespace VulkanContext
         vkDestroyInstance(instance, nullptr);
     }
 
-    void VulkanInstance::CollectExtensionsAndLayers()
+    void VulkanInstance::CheckExtensionsIfSupported()
     {
-        //=========================================================================
-        // Extensions
-        //=========================================================================
-
-        requestedInstanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-        requestedInstanceExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-        requestedInstanceExtensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_IOS_MVK)
-	    requestedInstanceExtensions.push_back(VK_MVK_IOS_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_MACOS_MVK)
-	    requestedInstanceExtensions.push_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
-#endif
-
         uint32_t extCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
         if (extCount > 0)
         {
             std::vector<VkExtensionProperties> extensions(extCount);
             VK_CHECK_RESULT(vkEnumerateInstanceExtensionProperties(nullptr, &extCount, &extensions.front()));
-            auto supportedInstanceExtensions = extensions | std::views::transform([](VkExtensionProperties extension) { return extension.extensionName; });
+
+            std::vector<std::string_view> supportedInstanceExtensions;
+            supportedInstanceExtensions.reserve(extensions.size());
+            std::transform(extensions.begin(), extensions.end(), std::back_inserter(supportedInstanceExtensions), [](const VkExtensionProperties& ext) { return ext.extensionName; });
 
             for (auto extension : requestedInstanceExtensions)
             {
@@ -71,11 +58,5 @@ namespace VulkanContext
                 enabledInstanceExtensions.push_back(extension);
             }
         }
-
-        //=========================================================================
-        // Layers
-        //=========================================================================
-
-        enabledLayers.push_back("VK_LAYER_LUNARG_api_dump");
     }
 }

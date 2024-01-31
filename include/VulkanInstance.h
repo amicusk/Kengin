@@ -18,19 +18,18 @@ namespace VulkanContext
     public:
         VkInstance instance;
 
-        VkResult CreateInstance(std::string_view appName);
+        void CreateInstance(std::string_view appName);
         void DestroyInstance();
+
+        void EnableExtension(const char* ext) { requestedInstanceExtensions.push_back(ext); }
+        void EnableLayer(const char* layer) { enabledLayers.push_back(layer); }
 
     private:
         std::vector<const char*> requestedInstanceExtensions = {};  // 获取所有需要的拓展
         std::vector<const char*> enabledInstanceExtensions = {};    // 需要且支持的拓展
         std::vector<const char*> enabledLayers = {};
-        void CollectExtensionsAndLayers();
+        void CheckExtensionsIfSupported();
     };
 }
-
-
-
-
 
 #endif //KENGIN_VULKANINSTANCE_H
