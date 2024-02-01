@@ -29,15 +29,7 @@ namespace VulkanContext
 
         ~VulkanApplication();
 
-        static VulkanApplication* GetInstance()
-        {
-            std::call_once(onlyOnce, [](){ instance.reset(new VulkanApplication()); });
-            return instance.get();
-        }
-
-    private:
-        static std::unique_ptr<VulkanApplication> instance;
-        static std::once_flag onlyOnce;
+        static VulkanApplication* GetInstance();
 
     private:
         VulkanApplication();
@@ -58,16 +50,16 @@ namespace VulkanContext
         //========================================================================
 
     public:
-        std::unique_ptr<VulkanInstance> vulkanInstance;
-        std::unique_ptr<VulkanDevice> vulkanDevice;
+        std::unique_ptr<VulkanInstance> instance;
+        std::unique_ptr<VulkanDevice> device;
 
     private:
         // Instance
-        void CreateVulkanInstance() const { vulkanInstance->CreateInstance("Kengin"sv); }
+        void CreateVulkanInstance() const { instance->CreateInstance("Kengin"sv); }
         void CollectInstanceExtensionsAndLayers() const;
 
         // Device
-        VkPhysicalDevice PickPhysicalDevice() const;
+        [[nodiscard]] VkPhysicalDevice PickPhysicalDevice() const;
         void CollectDeviceExtensionsAndFeatures() const;
     };
 } // VulkanContext

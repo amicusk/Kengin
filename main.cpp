@@ -1,12 +1,16 @@
 #include <iostream>
 #include <memory>
-#include "VulkanInstance.h"
+#include "VulkanApplication.h"
 
 int main()
 {
     using namespace std::literals::string_view_literals;
 
-    auto instance = std::make_shared<VulkanContext::VulkanInstance>();
-    instance->CreateInstance("Kengin"sv);
-    instance->DestroyInstance();
+    auto application = VulkanContext::VulkanApplication::GetInstance();
+
+    application->Init();
+    application->Prepare();
+    application->Update();
+    application->Render();
+    application->Release();
 }
