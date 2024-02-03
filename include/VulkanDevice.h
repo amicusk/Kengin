@@ -46,7 +46,7 @@ namespace VulkanContext
 
         // Utils
     private:
-        uint32_t GetQueueFamilyIndex(VkQueueFlags queueFlags) const;
+        [[nodiscard]] uint32_t GetQueueFamilyIndex(VkQueueFlags queueFlags) const;
     };
 
 } // VulkanContext
